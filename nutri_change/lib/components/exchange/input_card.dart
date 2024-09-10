@@ -4,13 +4,22 @@ SizedBox card(
     {required String name,
     IconData? icon,
     void Function()? iconFunction,
-    required TextEditingController controller}) {
+    required TextEditingController controller,
+    void Function()? function}) {
   return SizedBox(
     width: 150,
     height: 70,
     child: TextField(
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       controller: controller,
+      textInputAction: (function == null)
+          ? TextInputAction.next
+          : TextInputAction.done, // to move to the next text field
+      onSubmitted: (value) {
+        if (function != null) {
+          function();
+        }
+      }, // to press enter at the last text field
       decoration: InputDecoration(
         suffixIcon: icon != null
             ? GestureDetector(

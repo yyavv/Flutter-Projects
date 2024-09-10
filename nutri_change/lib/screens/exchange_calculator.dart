@@ -54,15 +54,19 @@ class _ExchangeCalculatorState extends State<ExchangeCalculator> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     card(
-                        name: elements[i],
-                        icon: i == 0
-                            ? ((isSemi)
-                                ? FontAwesomeIcons.circleHalfStroke
-                                : FontAwesomeIcons.solidCircle)
-                            : null,
-                        iconFunction: i == 0 ? iconToggle : null,
-                        controller: controllers[i]),
-                    card(name: elements[i + 1], controller: controllers[i + 1]),
+                      name: elements[i],
+                      icon: i == 0
+                          ? ((isSemi)
+                              ? FontAwesomeIcons.circleHalfStroke
+                              : FontAwesomeIcons.solidCircle)
+                          : null,
+                      iconFunction: i == 0 ? iconToggle : null,
+                      controller: controllers[i],
+                    ),
+                    card(
+                        name: elements[i + 1],
+                        controller: controllers[i + 1],
+                        function: i == 6 ? calculate : null),
                   ],
                 ),
               const SizedBox(height: 10),
@@ -93,6 +97,7 @@ class _ExchangeCalculatorState extends State<ExchangeCalculator> {
   }
 
   void calculate() {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       // Reset the values
       cho = 0;
@@ -125,8 +130,8 @@ class _ExchangeCalculatorState extends State<ExchangeCalculator> {
       fat += (double.tryParse(controllers[5].text) ?? 0) * 5;
 
       // nuts
-      cho += (double.tryParse(controllers[6].text) ?? 0) * 2;
-      protein += (double.tryParse(controllers[6].text) ?? 0) * 5;
+      protein += (double.tryParse(controllers[6].text) ?? 0) * 2;
+      fat += (double.tryParse(controllers[6].text) ?? 0) * 5;
 
       // legumes
       cho += (double.tryParse(controllers[7].text) ?? 0) * 15;
