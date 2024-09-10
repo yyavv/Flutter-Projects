@@ -27,12 +27,12 @@ class NutritionTable extends StatelessWidget {
           // Clip the DataTable to give it rounded corners
           borderRadius: BorderRadius.circular(20), // Apply border radius here
           child: DataTable(
-            headingRowColor: MaterialStateColor.resolveWith(
+            headingRowColor: WidgetStateColor.resolveWith(
                 (states) => Colors.blueAccent.shade100),
-            dataRowColor: MaterialStateColor.resolveWith(
+            dataRowColor: WidgetStateColor.resolveWith(
                 (states) => Colors.white), // Background color for rows
             columnSpacing: 30, // Reduces the spacing between columns
-            columns: [
+            columns: const [
               DataColumn(
                 label: Text(
                   'Group',
@@ -78,21 +78,21 @@ class NutritionTable extends StatelessWidget {
                   '${cho.toStringAsFixed(2)}g',
                   '${(4 * cho).toStringAsFixed(2)}cal',
                   getTotal() > 0
-                      ? '${(cho / getTotal() * 100).toStringAsFixed(1)}%'
+                      ? '${(cho * 4 / getTotal() * 100).toStringAsFixed(1)}%'
                       : '0.0%'),
               _buildDataRow(
                   'Protein',
                   '${protein.toStringAsFixed(2)}g',
                   '${(4 * protein).toStringAsFixed(2)}cal',
                   getTotal() > 0
-                      ? '${(protein / getTotal() * 100).toStringAsFixed(1)}%'
+                      ? '${(protein * 4 / getTotal() * 100).toStringAsFixed(1)}%'
                       : '0.0%'),
               _buildDataRow(
                   'Fat',
                   '${fat.toStringAsFixed(2)}g',
                   '${(fat * 9).toStringAsFixed(2)}cal',
                   getTotal() > 0
-                      ? '${(fat / getTotal() * 100).toStringAsFixed(1)}%'
+                      ? '${(fat * 9 / getTotal() * 100).toStringAsFixed(1)}%'
                       : '0.0%'),
               _buildDataRow(
                   'Total',
@@ -111,8 +111,7 @@ class NutritionTable extends StatelessWidget {
       String label, String gram, String calori, String percent,
       {Color? color}) {
     return DataRow(
-      color:
-          MaterialStateProperty.resolveWith((states) => color ?? Colors.white),
+      color: WidgetStateProperty.resolveWith((states) => color ?? Colors.white),
       cells: [
         DataCell(Text(
           label,
@@ -126,6 +125,6 @@ class NutritionTable extends StatelessWidget {
   }
 
   double getTotal() {
-    return cho + protein + fat;
+    return cho * 4 + protein * 4 + fat * 9;
   }
 }
