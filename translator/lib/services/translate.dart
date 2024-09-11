@@ -6,7 +6,6 @@ class Translator {
   final String text;
   final String start;
   final String dest;
-  final String _apiKey = "AIzaSyDQH2DQ-2DtSnDpKp9n8rgIzbAfEZoJ6OU";
 
   Future<String> generateText() async {
     final model = GenerativeModel(
