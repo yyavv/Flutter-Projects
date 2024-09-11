@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         clipboardData.text != null &&
         clipboardData.text!.isNotEmpty) {
       setState(() {
-        _controller.text += clipboardData.text!;
+        _controller.text = clipboardData.text!;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
