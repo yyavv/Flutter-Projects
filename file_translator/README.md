@@ -5,10 +5,8 @@ A Flutter application that allows users to select `.txt` or `.srt` files, proces
 ## Features
 
 1. **File Selection**: Users can select text files (`.txt` and `.srt` formats) from their local system.
-2. **Text Modification**: Adds "@" marks to the end of each line in the selected file to preserve the structure during translation.
-3. **Translation**: Integrates with a translation service (e.g., Gemini API) to translate the modified text.
-4. **File Saving**: Saves the translated text back to a new file with the prefix "translated-" while maintaining the original file extension.
-5. **Marker Removal**: After translation, removes the "@" marks from the translated text before saving.
+2. **Translation**: Integrates with a translation service (e.g., Gemini API) to translate the modified text.
+3. **File Saving**: Saves the translated text back to a new file with the prefix "translated-" while maintaining the original file extension.
 
 ## Prerequisites
 
