@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'gemini.dart';
+import 'dart:math';
 
 // Function to modify text by adding '@' to the end of each line
 String modifyText(String content) {
@@ -50,4 +51,20 @@ Future<void> saveToFile(String content, String originalFilePath) async {
   } catch (e) {
     print("Error saving file: $e");
   }
+}
+
+// Helper function to format file size
+String formatBytes(int bytes, [int decimals = 2]) {
+  if (bytes <= 0) return "0 B";
+
+  const suffixes = ["Byte", "KB", "MB", "GB", "TB", "PB", "EB"];
+
+  // Avoid index out of range error
+  int i = (log(bytes) / log(1024)).floor();
+  if (i >= suffixes.length)
+    i = suffixes.length - 1; // Cap index to the suffixes list
+
+  var size = (bytes / pow(1024, i)).toStringAsFixed(decimals);
+
+  return '$size ${suffixes[i]}';
 }
