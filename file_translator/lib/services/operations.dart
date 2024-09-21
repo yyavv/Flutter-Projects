@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'gemini.dart';
 import 'dart:math';
@@ -33,7 +32,8 @@ String removeMarks(String content) {
   return content.replaceAll('@', '');
 }
 
-Future<void> saveToFile(String content, String originalFilePath) async {
+Future<void> saveToFile(
+    {required String content, required String originalFilePath}) async {
   try {
     // Extract the directory, base name, and extension of the original file
     String directory = p.dirname(originalFilePath);
@@ -43,10 +43,7 @@ Future<void> saveToFile(String content, String originalFilePath) async {
     // Construct the new file name with the same extension
     String newFilePath = p.join(directory, 'translated-$baseName$extension');
 
-    // Write the translated content to the new file
-    File newFile = File(newFilePath);
-    await newFile.writeAsString(content);
-
+    // Write the translated cog(content);
     print("File saved to: $newFilePath");
   } catch (e) {
     print("Error saving file: $e");

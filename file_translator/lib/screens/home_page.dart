@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 
+import '../components/file_content_display.dart';
 import '../services/operations.dart'; // Import this package
 
 class HomePage extends StatefulWidget {
@@ -24,6 +25,8 @@ class _HomePageState extends State<HomePage>
   String currentStage = 'Getting Data';
   bool isTranslationStarted = false;
   Timer? _progressTimer;
+
+  String translatedText = '';
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _HomePageState extends State<HomePage>
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['txt', 'srt'],
+        onFileLoading: (p0) => {},
       );
 
       if (result != null && result.files.single.path != null) {
@@ -99,11 +103,10 @@ class _HomePageState extends State<HomePage>
     print(text);
 
     setState(() {
+      translatedText = text;
       currentStage = 'Writing and Saving...';
       _updateProgress(0.9); // Animate to 90%
     });
-    await Future.delayed(Duration(seconds: 1)); // Simulate saving time
-    await saveToFile(text, filePath);
 
     setState(() {
       currentStage = 'Finished...';
@@ -154,16 +157,18 @@ class _HomePageState extends State<HomePage>
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (fileName == null)
-              ElevatedButton(
-                onPressed: _pickFile,
-                child: const Text('Pick a Text File'),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _pickFile,
+                  child: const Text('Pick a Text File'),
+                ),
               ),
             if (fileName != null)
               Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     '$fileName',
@@ -182,10 +187,19 @@ class _HomePageState extends State<HomePage>
                     child: const Text('Change File'),
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: translate,
-                    child: const Text('Translate'),
-                  ),
+                  isTranslationStarted
+                      ? ElevatedButton(
+                          onPressed: translate,
+                          child: const Text('Translate'),
+                        )
+                      : ElevatedButton(
+                          onPressed: () async {
+                            saveToFile(
+                                content: translatedText,
+                                originalFilePath: filePath);
+                          },
+                          child: const Text('Save to File'),
+                        ),
                   SizedBox(height: 40),
                   Visibility(
                     visible: isTranslationStarted,
@@ -207,12 +221,28 @@ class _HomePageState extends State<HomePage>
                   ),
                 ],
               ),
+            const SizedBox(height: 30),
+
+            // New component to display the file content
+            //if (currentStage == 'Finished...')
+            if (fileName != null)
+              FileContentDisplay(
+                fileContentLeft: fileContent,
+                initialFileContentRight: translatedText,
+                onTextChanged: (text) {
+                  setState(() {
+                    translatedText = text;
+                    print(translatedText);
+                  });
+                },
+              ),
           ],
         ),
       ),
     );
   }
 }
+//TODO: change file tusu duzgun calismiyor
 //TODO: islem tamamlandiginda dosyayi acma seceneginin olmasi ve basarili bir sekilde yapildiginin anlatilmasi
 //TODO: yeni dosyanin ismi ve konumu
 //TODO: uygulama mobilde tam verimli calismiyor mobil icin tekrar kontrol ve kod yazilmasi
