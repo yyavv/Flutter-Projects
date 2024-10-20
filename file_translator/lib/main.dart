@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       scaffoldMessengerKey: snackbarKey,
+      debugShowCheckedModeBanner: false,
       home: const HomePage(),
     );
   }

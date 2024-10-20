@@ -3,7 +3,6 @@ import 'package:path/path.dart' as p;
 import 'package:url_launcher/url_launcher.dart';
 import '../components/custom_snackbar.dart';
 import 'gemini.dart';
-import 'dart:math';
 import 'dart:io';
 
 // // Function to modify text by adding '@' to the end of each line
@@ -24,9 +23,9 @@ import 'dart:io';
 //   return modifiedLines.join('\n');
 // }
 
-Future<String> translateText(String text) async {
+Future<String> translateText(String text, String language) async {
   String result = '';
-  result = await Gemini(text: text).generateText();
+  result = await Gemini(text, language).generateText();
   //print(result);
   return result;
 }
@@ -36,7 +35,9 @@ Future<String> translateText(String text) async {
 // }
 
 Future<void> saveToFile(
-    {required String content, required String originalFilePath}) async {
+    {required String content,
+    required String originalFilePath,
+    required String language}) async {
   try {
     // Extract the directory, base name, and extension of the original file
     String directory = p.dirname(originalFilePath);
@@ -44,7 +45,8 @@ Future<void> saveToFile(
     String extension = p.extension(originalFilePath); // Get the file extension
 
     // Construct the new file name with the same extension
-    String newFilePath = p.join(directory, 'translated-$baseName$extension');
+    String newFilePath =
+        p.join(directory, '${language.toUpperCase()}-$baseName$extension');
 
     // Write the content to the new file
     final file = File(newFilePath);
@@ -111,18 +113,19 @@ List<String> createChunks(String content, int chunkSize) {
   return chunks;
 }
 
-Future<String> translateWithRetry(String chunk, {int retryCount = 3}) async {
+Future<String> translateWithRetry(String chunk, int index, String language,
+    {int retryCount = 3}) async {
   int attempt = 0;
   while (attempt < retryCount) {
     try {
-      String translated = await translateText(chunk);
+      String translated = await translateText(chunk, language);
+
       if (translated.isNotEmpty) {
         return translated; // Return the successful translation
       }
     } catch (e) {
-      print("Attempt ${attempt + 1} failed: $e");
+      print("Attempt ${attempt + 1} of chunk ${index + 1} failed: $e");
     }
-    attempt++;
   }
   return ''; // Return an empty string if all attempts fail
 }

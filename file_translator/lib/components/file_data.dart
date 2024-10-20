@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:charset/charset.dart';
 import 'package:path/path.dart' as p;
 import 'package:sub_translator/components/custom_snackbar.dart';
+import 'dart:convert';
 
 class FileData {
   String content = '';
@@ -9,7 +11,7 @@ class FileData {
   String? name;
   String size = '';
 
-  // Load file content
+  //Load file content
   Future<void> load(String path) async {
     File file = File(path);
     try {

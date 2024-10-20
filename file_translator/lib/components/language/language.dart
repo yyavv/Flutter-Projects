@@ -13,7 +13,7 @@ class Language {
     'Hindi',
     'Italian',
     'Japanese',
-    'Javanese',
+    'Japanese',
     'Korean',
     'Persian (Farsi)',
     'Polish',
