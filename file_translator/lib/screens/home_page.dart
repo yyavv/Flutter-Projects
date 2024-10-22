@@ -3,12 +3,16 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sub_translator/components/custom_snackbar.dart';
+import 'dart:html' as html; // For web
+import 'dart:typed_data'; // For working with bytes
+import 'package:flutter/foundation.dart'; // For kIsWeb
 
 import '../components/language/language.dart' as L;
 import '../components/file_content_display.dart';
 import '../components/file_data.dart';
 import '../components/language/language_picker.dart';
 import '../services/operations.dart'; // Import this package
+import '../components/global_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,12 +33,13 @@ class _HomePageState extends State<HomePage>
       false; // to keep track of the stages and progress animation
   Timer? _progressTimer;
 
-  String translatedText = '';
+  //String translatedText = '';
 
   // to check if select file operation has been started to activate loading animation
   bool isFileSelected = false;
 
   int numberOfChunks = 0;
+  int currentChunk = 0;
 
   int _selectedStart = 0;
   int _selectedDest = 1;
@@ -61,7 +66,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _pickFile() async {
     setState(() {
-      // to start loading indicator
+      // Start loading indicator
       file = FileData();
       isFileSelected = true;
     });
@@ -72,19 +77,45 @@ class _HomePageState extends State<HomePage>
         allowedExtensions: ['txt', 'srt'],
       );
 
-      if (result != null && result.files.single.path != null) {
-        await file.load(result.files.single.path!);
-
-        setState(() {
-          //fileContent = content;
-          //filePath = result.files.single.path!;
-          //fileName = path.basename(filePath);
-          //fileSize = formatBytes(file.lengthSync());
-          _animationController.reset();
-          currentStage = 'Getting Data...';
-          isTranslationStarted = false;
-          isFileSelected = false; // End loading
-        });
+      if (result != null) {
+        // Check if the platform is web or desktop
+        if (kIsWeb) {
+          // For web: Get bytes directly
+          Uint8List? bytes = result.files.single.bytes;
+          if (bytes != null) {
+            await file.loadForWeb(bytes, result.files.single.name);
+            setState(() {
+              _animationController.reset();
+              currentStage = 'Getting Data...';
+              isTranslationStarted = false;
+              isFileSelected = false; // End loading
+            });
+          } else {
+            print("No file selected or user canceled the picker.");
+            showCustomSnackbar(message: 'No file selected!');
+            setState(() {
+              isFileSelected = false; // End loading
+            });
+          }
+        } else {
+          // For desktop: Use file path
+          String? filePath = result.files.single.path;
+          if (filePath != null) {
+            await file.loadUsingPath(filePath);
+            setState(() {
+              _animationController.reset();
+              currentStage = 'Getting Data...';
+              isTranslationStarted = false;
+              isFileSelected = false; // End loading
+            });
+          } else {
+            print("No file selected or user canceled the picker.");
+            showCustomSnackbar(message: 'No file selected!');
+            setState(() {
+              isFileSelected = false; // End loading
+            });
+          }
+        }
       } else {
         print("No file selected or user canceled the picker.");
         showCustomSnackbar(message: 'No file selected!');
@@ -106,7 +137,7 @@ class _HomePageState extends State<HomePage>
     //Initialize State
     setState(() {
       hasErrorOccurred = false;
-      translatedText = '';
+      GlobalData.translatedText = '';
       isTranslationStarted = true;
       _updateProgress(0.1); // Start animation to 10%
       currentStage = 'Getting Data...';
@@ -117,6 +148,7 @@ class _HomePageState extends State<HomePage>
     // Create chunks
     List<String> chunks = createChunks(file.content, 650);
     numberOfChunks = chunks.length;
+    currentChunk = 0;
 
     List<String> responses = List<String>.filled(numberOfChunks, '');
 
@@ -149,6 +181,7 @@ class _HomePageState extends State<HomePage>
       // responses[index] = chunks[index];
       print(index + 1);
       incomingResponseCount++;
+      currentChunk = incomingResponseCount;
 
       setState(() {
         double currentProgress =
@@ -166,7 +199,7 @@ class _HomePageState extends State<HomePage>
 
     setState(() {
       responses.forEach((response) {
-        translatedText += response;
+        GlobalData.translatedText += response;
       });
       currentStage = 'Writing and Saving...';
       _updateProgress(0.9); // Animate to 90%
@@ -308,12 +341,19 @@ class _HomePageState extends State<HomePage>
                                       'Writing and Saving...')
                                   ? () async {
                                       try {
-                                        await saveToFile(
-                                          content: translatedText,
-                                          originalFilePath: file.path,
-                                          language: L.Language.getNameByIndex(
-                                              _selectedDest),
-                                        );
+                                        if (kIsWeb) {
+                                          await saveToFileWeb(
+                                            originalFileName: file.name ?? '',
+                                            language: L.Language.getNameByIndex(
+                                                _selectedDest),
+                                          );
+                                        } else {
+                                          await saveToFile(
+                                            originalFilePath: file.path ?? '',
+                                            language: L.Language.getNameByIndex(
+                                                _selectedDest),
+                                          );
+                                        }
 
                                         setState(() {
                                           currentStage = 'Finished...';
@@ -334,7 +374,7 @@ class _HomePageState extends State<HomePage>
                                           message:
                                               'Data is not ready to Save!');
                                     },
-                              child: const Text('Save to File'),
+                              child: const Text('Save File'),
                             )
                           : ElevatedButton(
                               onPressed: translate,
@@ -359,6 +399,11 @@ class _HomePageState extends State<HomePage>
                               currentStage,
                               style: const TextStyle(fontSize: 16),
                             ),
+                            if (currentStage == 'Translating...')
+                              Text(
+                                '$currentChunk / $numberOfChunks',
+                                style: const TextStyle(fontSize: 16),
+                              ),
                           ],
                         ),
                       ),
@@ -370,10 +415,10 @@ class _HomePageState extends State<HomePage>
                         //if (file.name != null)
                         FileContentDisplay(
                           fileContentLeft: file.content,
-                          initialFileContentRight: translatedText,
+                          initialFileContentRight: GlobalData.translatedText,
                           onTextChanged: (text) {
                             setState(() {
-                              translatedText = text;
+                              GlobalData.translatedText = text;
                               //print(translatedText);
                             });
                           },

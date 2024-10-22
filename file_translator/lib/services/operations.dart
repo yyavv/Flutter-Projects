@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../components/custom_snackbar.dart';
 import 'gemini.dart';
 import 'dart:io';
+import 'dart:html' as html; // For Web
+import '../components/global_data.dart';
 
 // // Function to modify text by adding '@' to the end of each line
 // String modifyText(String content) {
@@ -35,9 +37,7 @@ Future<String> translateText(String text, String language) async {
 // }
 
 Future<void> saveToFile(
-    {required String content,
-    required String originalFilePath,
-    required String language}) async {
+    {required String originalFilePath, required String language}) async {
   try {
     // Extract the directory, base name, and extension of the original file
     String directory = p.dirname(originalFilePath);
@@ -50,7 +50,7 @@ Future<void> saveToFile(
 
     // Write the content to the new file
     final file = File(newFilePath);
-    await file.writeAsString(content);
+    await file.writeAsString(GlobalData.translatedText);
 
     // Write the translated cog(content);
     print("File saved to: $newFilePath");
@@ -67,6 +67,26 @@ Future<void> saveToFile(
             print('Could not launch $newFilePath');
           }
         });
+  } catch (e) {
+    print("Error saving file: $e");
+    showCustomSnackbar(message: "Error saving file: $e");
+  }
+}
+
+Future<void> saveToFileWeb(
+    {required String originalFileName, required String language}) async {
+  try {
+    String basename = p.basenameWithoutExtension(originalFileName);
+    String extension = p.extension(originalFileName);
+
+    String newFileName = '${language.toUpperCase()}-$basename$extension';
+
+    final blob = html.Blob([GlobalData.translatedText], 'text/plain');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url)
+      ..setAttribute('download', newFileName)
+      ..click();
+    html.Url.revokeObjectUrl(url);
   } catch (e) {
     print("Error saving file: $e");
     showCustomSnackbar(message: "Error saving file: $e");

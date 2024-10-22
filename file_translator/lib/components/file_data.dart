@@ -4,15 +4,17 @@ import 'package:charset/charset.dart';
 import 'package:path/path.dart' as p;
 import 'package:sub_translator/components/custom_snackbar.dart';
 import 'dart:convert';
+import 'dart:typed_data'; // For Uint8List
 
 class FileData {
   String content = '';
-  String path = '';
+  String? path;
   String? name;
   String size = '';
+  bool isWeb = false;
 
   //Load file content
-  Future<void> load(String path) async {
+  Future<void> loadUsingPath(String path) async {
     File file = File(path);
     try {
       this.content = await file.readAsString();
@@ -22,6 +24,20 @@ class FileData {
     } catch (e) {
       print('Error reading file: $e');
       showCustomSnackbar(message: 'Error reading file: $e');
+      throw e;
+    }
+  }
+
+  // Load file content from bytes for web version
+  Future<void> loadForWeb(Uint8List bytes, String fileName) async {
+    try {
+      this.content = utf8.decode(bytes); // Decode the bytes to string
+      this.name = fileName;
+      this.size = formatBytes(bytes.length);
+      //this.extension = p.extension(fileName); // Get extension from file name
+      isWeb = true;
+    } catch (e) {
+      print('Error reading file: $e');
       throw e;
     }
   }
