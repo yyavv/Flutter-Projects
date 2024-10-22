@@ -1,0 +1,28 @@
+^C:\USERS\YAVUZ\ANDROIDSTUDIOPROJECTS\FILE_TRANSLATOR\BUILD\WINDOWS\X64\CMAKEFILES\8F59F9CE65218B9CA73C57325D25109F\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=C:\dev\flutter PROJECT_DIR=C:\Users\YAVUZ\AndroidStudioProjects\file_translator FLUTTER_ROOT=C:\dev\flutter FLUTTER_EPHEMERAL_DIR=C:\Users\YAVUZ\AndroidStudioProjects\file_translator\windows\flutter\ephemeral PROJECT_DIR=C:\Users\YAVUZ\AndroidStudioProjects\file_translator FLUTTER_TARGET=lib\main.dart DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=true PACKAGE_CONFIG=C:\Users\YAVUZ\AndroidStudioProjects\file_translator\.dart_tool\package_config.json C:/dev/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\YAVUZ\ANDROIDSTUDIOPROJECTS\FILE_TRANSLATOR\BUILD\WINDOWS\X64\CMAKEFILES\AFC4EF607F145279A19FF5CC2CE4D81D\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\YAVUZ\ANDROIDSTUDIOPROJECTS\FILE_TRANSLATOR\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/YAVUZ/AndroidStudioProjects/file_translator/windows -BC:/Users/YAVUZ/AndroidStudioProjects/file_translator/build/windows/x64 --check-stamp-file C:/Users/YAVUZ/AndroidStudioProjects/file_translator/build/windows/x64/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

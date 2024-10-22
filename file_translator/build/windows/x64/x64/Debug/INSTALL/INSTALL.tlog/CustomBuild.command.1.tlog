@@ -1,0 +1,10 @@
+^C:\USERS\YAVUZ\ANDROIDSTUDIOPROJECTS\FILE_TRANSLATOR\BUILD\WINDOWS\X64\CMAKEFILES\447191FA3C6B357E130E90286754C864\INSTALL_FORCE.RULE
+setlocal
+cd .
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

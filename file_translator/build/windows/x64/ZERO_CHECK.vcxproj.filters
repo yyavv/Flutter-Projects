@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\YAVUZ\AndroidStudioProjects\file_translator\build\windows\x64\CMakeFiles\447191fa3c6b357e130e90286754c864\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0B19E08C-C8A2-3981-90A8-75E620F71F3B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
